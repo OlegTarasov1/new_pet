@@ -4,7 +4,8 @@ from rest_framework.viewsets import ModelViewSet
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from django.core.cache import cache
-# from .permissions import UuidPermission
+from rest_framework_simplejwt.authentication import JWTAuthentication
+from .permissions import UuidPermission
 from .models import Notes
 from .serializers import NotesSerializer
 
@@ -12,6 +13,7 @@ from .serializers import NotesSerializer
 class NoteMeneger(ModelViewSet):
     queryset = Notes.objects.all()
     serializer_class = NotesSerializer
+    authentication_classes = [JWTAuthentication]
 
     def list(self, request, *args, **kwargs):
         user = request.user
@@ -21,8 +23,9 @@ class NoteMeneger(ModelViewSet):
 
 
 class CreateUuid(APIView):
-    # permission_classes = (UuidPermission, )
-
+    permission_classes = (UuidPermission, )
+    authentication_classes = [JWTAuthentication]
+    
     def post(self, request, *args, **kwargs):
         unique_href = uuid.uuid4()
         time = request.data.get('time')
